@@ -26,7 +26,6 @@ class Person:
         except Exception:
             raise Exception("数据格式不正确， 请按如下格式检查：（'Sz', 18, '男', 1.70, 55）")
 
-
     def get_body_fat(self):
 
         BMI = self.weight / (self.height * self.height)
@@ -46,16 +45,38 @@ class Person:
         elif self.body_fat > max_value:
             body_fat_result = "偏胖"
 
-        return "{} 您好，您的体脂率为{}，正常范围在{}-{}；所以，您{}！".format(name, self.body_fat, min_value, max_value, body_fat_result)
-
-
+        return "{} 您好，您的体脂率为{}，正常范围在{}-{}；所以，您{}！".format(self.name, self.body_fat, min_value, max_value, body_fat_result)
 
 if __name__ == '__main__':
 
-    name = input("请输入您的姓名：")
-    age = input("请输入您的年龄：")
-    sex = input("请输入您的性别（男/女）：")
-    height = input("请输入您的身高(m）：")
-    weight = input("请输入您的体重(kg)：")
-    person = Person(name, age, sex, height, weight)
-    print(person.get_body_fat())
+    # name = input("请输入您的姓名：")
+    # age = input("请输入您的年龄：")
+    # sex = input("请输入您的性别（男/女）：")
+    # height = input("请输入您的身高(m）：")
+    # weight = input("请输入您的体重(kg)：")
+    # person = Person(name, age, sex, height, weight)
+    # print(person.get_body_fat())
+
+    import itchat
+
+    @itchat.msg_register(itchat.content.TEXT)
+    def recive_text(msg):
+        from_user = msg["FromUserName"]
+        content = msg["Text"]
+
+        # 使用正则表达式，按照规则解析
+        import re
+        result = re.match(r"(.*)[，,\s*](.*)[，,\s*](.*)[，,\s*](.*)[，,\s*](.*)", content)
+        if result:
+            groups = result.groups()
+            # print(groups)
+            person = Person(*groups)
+            itchat.send_msg(person.get_body_fat(), toUserName=from_user)
+
+        else:
+            itchat.send_msg("请严格按照格式: 姓名，年龄，性别，身高(m)，体重(kg)", toUserName=from_user)
+
+    itchat.auto_login(hotReload=True, enableCmdQR=False)
+
+    itchat.run()
+
