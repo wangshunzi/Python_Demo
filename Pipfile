@@ -6,6 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+itchat = "*"
+lxml = "*"
 
 [requires]
 python_version = "3.7"
